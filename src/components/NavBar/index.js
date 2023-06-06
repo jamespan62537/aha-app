@@ -1,8 +1,6 @@
 import cx from "classnames";
 import { NavLink } from "react-router-dom";
 
-import useMobileHook from "../../hooks/useMobileHook";
-
 import logo from "../../images/logo.png";
 import Icon from "../Icon";
 
@@ -18,15 +16,8 @@ const pageLinks = [
 ];
 
 const NavBar = () => {
-  const isMobile = useMobileHook();
-
   return (
-    <nav
-      className={cx(
-        "flex h-16 w-full flex-row items-center justify-center gap-10 bg-black-800 md:h-full md:w-20 md:flex-col md:justify-start md:gap-0 md:pt-9",
-        { hidden: isMobile }
-      )}
-    >
+    <nav className="order-2 flex h-16 w-full flex-row items-center justify-center gap-10 bg-black-800 md:order-1 md:h-full md:w-20 md:flex-col md:justify-start md:gap-0 md:pt-9">
       <img className="mb-10 hidden md:block" src={logo} alt="logo" />
       {pageLinks.map((page) => {
         return (
