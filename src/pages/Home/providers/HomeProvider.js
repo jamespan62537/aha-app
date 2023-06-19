@@ -48,7 +48,7 @@ const HomeProvider = ({ children }) => {
     [setSearchQuery]
   );
 
-  const { data, refetch, remove } = useInfiniteQuery(
+  const { data, refetch, remove, isError, isLoading, isFetchingNextPage } = useInfiniteQuery(
     ["results"],
     ({ pageParam = 1 }) => getResults({ page: pageParam, pageSize: searchQuery.perPage, keyword: searchQuery.keyword }),
     {
@@ -78,10 +78,13 @@ const HomeProvider = ({ children }) => {
       resultList,
       pages,
       searchQuery,
+      isError,
+      isLoading,
+      isFetchingNextPage,
       handleChangePerPage,
       handleChangeKeyword,
     };
-  }, [isReady, resultList, pages, searchQuery, handleChangePerPage, handleChangeKeyword]);
+  }, [isReady, resultList, pages, searchQuery, isError, isLoading, isFetchingNextPage, handleChangePerPage, handleChangeKeyword]);
 
   return <context.Provider value={contextData}>{children}</context.Provider>;
 };
