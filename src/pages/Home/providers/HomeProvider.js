@@ -1,4 +1,12 @@
-import { createContext, useContext, useMemo } from "react";
+import { createContext, useCallback, useContext, useMemo } from "react";
+
+import { useInfiniteQuery } from "react-query";
+import { useSearchParams } from "react-router-dom";
+import { useDebounce, useSetState } from "react-use";
+
+import { getResults } from "../../../apis/home";
+
+import { getPaginationData } from "../../../utils/combination";
 
 const context = createContext();
 
@@ -13,9 +21,65 @@ export const useHome = () => {
 };
 
 const HomeProvider = ({ children }) => {
+  let [searchParams] = useSearchParams();
+
+  const { keyword = "", perPage = 9 } = useMemo(() => {
+    const result = {};
+    for (const [key, value] of searchParams.entries()) {
+      result[key] = value;
+    }
+    return result;
+  }, [searchParams]);
+
+  const [searchQuery, setSearchQuery] = useSetState({ keyword, perPage });
+
+  const handleChangePerPage = useCallback(
+    (value) => {
+      setSearchQuery({ perPage: value });
+    },
+    [setSearchQuery]
+  );
+
+  const handleChangeKeyword = useCallback(
+    (value) => {
+      setSearchQuery({ keyword: value });
+    },
+    [setSearchQuery]
+  );
+
+  const { data, refetch, remove } = useInfiniteQuery(
+    ["results"],
+    ({ pageParam = 1 }) => getResults({ page: pageParam, pageSize: searchQuery.perPage, keyword: searchQuery.keyword }),
+    {
+      enabled: false,
+      getNextPageParam: (lastPage) => {
+        return lastPage.page + 1 <= lastPage.totalPages ? lastPage.page + 1 : undefined;
+      },
+    }
+  );
+
+  const { data: resultList, pages } = getPaginationData(data);
+
+  const [isReady] = useDebounce(
+    () => {
+      console.log("im here");
+      remove();
+      refetch();
+    },
+    800,
+    [searchQuery]
+  );
+
   const contextData = useMemo(() => {
-    return {};
-  }, []);
+    return {
+      isReady: isReady(),
+      resultList,
+      pages,
+      searchQuery,
+      handleChangePerPage,
+      handleChangeKeyword,
+    };
+  }, [isReady, resultList, pages, searchQuery, handleChangePerPage, handleChangeKeyword]);
 
   return <context.Provider value={contextData}>{children}</context.Provider>;
 };

@@ -4,10 +4,13 @@ import { SCInput } from "./SliderStyle";
 
 const resultValueList = ["3", "6", "9", "12", "15"];
 
-const Slider = ({ value = "9", onChange = () => {} }) => {
-  const handleChange = useCallback((e) => {
-    onChange(e.target.value);
-  }, [onChange]);
+const Slider = ({ value = 9, onChange = () => {} }) => {
+  const handleChange = useCallback(
+    (e) => {
+      onChange(e.target.value);
+    },
+    [onChange]
+  );
 
   return (
     <div className="w-full">
@@ -15,7 +18,7 @@ const Slider = ({ value = "9", onChange = () => {} }) => {
 
       <datalist id="sliderList" className="flex items-center justify-between">
         {resultValueList.map((value) => (
-          <option className="text-base opacity-50" value={value} label={value} />
+          <option className="text-base opacity-50" value={value} label={value} key={value} />
         ))}
       </datalist>
     </div>

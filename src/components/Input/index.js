@@ -12,7 +12,7 @@ const Input = ({ onChange, placeholder, value }) => {
     <input
       className="focus-visible:none w-full rounded-md border-[3px] border-solid border-white border-opacity-50 bg-transparent px-4 py-5 focus:border-orange-500 focus:outline-none"
       value={value}
-      onchange={handleChange}
+      onChange={handleChange}
       placeholder={placeholder}
     />
   );
