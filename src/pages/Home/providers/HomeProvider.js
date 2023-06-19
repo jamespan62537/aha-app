@@ -23,6 +23,7 @@ export const useHome = () => {
 const HomeProvider = ({ children }) => {
   let [searchParams] = useSearchParams();
 
+  // Parse query string
   const { keyword = "", perPage = 9 } = useMemo(() => {
     const result = {};
     for (const [key, value] of searchParams.entries()) {
@@ -58,11 +59,12 @@ const HomeProvider = ({ children }) => {
     }
   );
 
+  // Combine result pagination into default structure
   const { data: resultList, pages } = getPaginationData(data);
 
+  // Verify if the input has been updated
   const [isReady] = useDebounce(
     () => {
-      console.log("im here");
       remove();
       refetch();
     },
