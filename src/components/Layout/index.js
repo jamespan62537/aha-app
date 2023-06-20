@@ -11,6 +11,9 @@ const pageConfig = {
   "/": {
     isShowNavBar: true,
   },
+  "/result": {
+    isShowNavBar: false,
+  },
   "/tags": {
     isShowNavBar: false,
   },
