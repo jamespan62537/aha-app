@@ -12,11 +12,11 @@ import { useHome } from "../providers/HomeProvider";
 const Search = () => {
   const navigate = useNavigate();
 
-  const { pages, keywordParam, perPageParam, handleChangePerPage, handleChangeKeyword, isReady } = useHome();
+  const { pages, searchQuery, handleChangePerPage, handleChangeKeyword, isReady } = useHome();
 
   const handleSearch = useCallback(() => {
-    navigate(`/result?keyword=${keywordParam}&perPage=${perPageParam}`);
-  }, [navigate, keywordParam, perPageParam]);
+    navigate(`/result?keyword=${searchQuery.keyword}&perPage=${searchQuery.perPage}`);
+  }, [navigate, searchQuery]);
 
   return (
     <div className="mx-auto flex h-full w-full max-w-[725px] flex-col">
@@ -34,7 +34,7 @@ const Search = () => {
             <span className="text-5xl leading-[72px]">Searching...</span>
           )}
         </div>
-        <Slider value={perPageParam} onChange={handleChangePerPage} />
+        <Slider value={searchQuery.perPage} onChange={handleChangePerPage} />
       </TitleBlock>
       <div className="flex flex-grow items-end">
         <Button title="Search" type={Button.ButtonType.CONTAINED} size={Button.ButtonSize.XLARGE} onClick={handleSearch} />

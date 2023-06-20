@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useMemo } from "react";
 
 import { useInfiniteQuery } from "react-query";
 import { useSearchParams } from "react-router-dom";
@@ -32,20 +32,25 @@ const HomeProvider = ({ children }) => {
     return result;
   }, [searchParams]);
 
-  const [keywordParam, setKeywordParam] = useState(keyword);
-  const [perPageParam, setPerPageParam] = useState(perPage);
+  const [searchQuery, setSearchQuery] = useSetState({ keyword, perPage });
 
-  const handleChangePerPage = useCallback((value) => {
-    setPerPageParam(value);
-  }, []);
+  const handleChangePerPage = useCallback(
+    (value) => {
+      setSearchQuery({ perPage: value });
+    },
+    [setSearchQuery]
+  );
 
-  const handleChangeKeyword = useCallback((value) => {
-    setKeywordParam(value);
-  }, []);
+  const handleChangeKeyword = useCallback(
+    (value) => {
+      setSearchQuery({ keyword: value });
+    },
+    [setSearchQuery]
+  );
 
-  const { data, refetch, remove, isError, isLoading, isFetchingNextPage } = useInfiniteQuery(
+  const { data, refetch, remove, isError, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery(
     ["results"],
-    ({ pageParam = 1 }) => getResults({ page: pageParam, pageSize: perPageParam, keyword: keywordParam }),
+    ({ pageParam = 1 }) => getResults({ page: pageParam, pageSize: searchQuery.perPage, keyword: searchQuery.keyword }),
     {
       enabled: false,
       getNextPageParam: (lastPage) => {
@@ -64,7 +69,7 @@ const HomeProvider = ({ children }) => {
       refetch();
     },
     800,
-    [keywordParam]
+    [searchQuery]
   );
 
   const contextData = useMemo(() => {
@@ -72,11 +77,12 @@ const HomeProvider = ({ children }) => {
       isReady: isReady(),
       resultList,
       pages,
-      keywordParam,
-      perPageParam,
+      searchQuery,
       isError,
       isLoading,
       isFetchingNextPage,
+      hasNextPage,
+      fetchNextPage,
       handleChangePerPage,
       handleChangeKeyword,
     };
@@ -84,11 +90,12 @@ const HomeProvider = ({ children }) => {
     isReady,
     resultList,
     pages,
-    keywordParam,
-    perPageParam,
+    searchQuery,
     isError,
     isLoading,
     isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
     handleChangePerPage,
     handleChangeKeyword,
   ]);

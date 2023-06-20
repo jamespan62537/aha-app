@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 
+import Button from "../../../components/Button";
 import Icon from "../../../components/Icon";
 import LoadingCard from "../../../components/LoadingCard";
 import TitleBlock from "../Search/components/TitleBlock";
@@ -13,7 +14,7 @@ const EMPTY_COUNT = 5;
 const Result = () => {
   const emptyResult = Array.from({ length: EMPTY_COUNT }, () => null);
 
-  const { resultList, isError, isLoading, isFetchingNextPage } = useHome();
+  const { resultList, isError, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useHome();
 
   const renderResults = () => {
     if (isError)
@@ -42,6 +43,11 @@ const Result = () => {
         <TitleBlock title="Results" className="mb-0" />
       </div>
       {renderResults()}
+      {hasNextPage && (
+        <div className="mt-10">
+          <Button title="More" type={Button.ButtonType.CONTAINED} size={Button.ButtonSize.XLARGE} onClick={fetchNextPage} />
+        </div>
+      )}
     </div>
   );
 };
