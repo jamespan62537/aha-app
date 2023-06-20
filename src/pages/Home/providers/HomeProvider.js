@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo } from "react";
+import { createContext, useCallback, useContext, useMemo, useState } from "react";
 
 import { useInfiniteQuery } from "react-query";
 import { useSearchParams } from "react-router-dom";
@@ -32,25 +32,20 @@ const HomeProvider = ({ children }) => {
     return result;
   }, [searchParams]);
 
-  const [searchQuery, setSearchQuery] = useSetState({ keyword, perPage });
+  const [keywordParam, setKeywordParam] = useState(keyword);
+  const [perPageParam, setPerPageParam] = useState(perPage);
 
-  const handleChangePerPage = useCallback(
-    (value) => {
-      setSearchQuery({ perPage: value });
-    },
-    [setSearchQuery]
-  );
+  const handleChangePerPage = useCallback((value) => {
+    setPerPageParam(value);
+  }, []);
 
-  const handleChangeKeyword = useCallback(
-    (value) => {
-      setSearchQuery({ keyword: value });
-    },
-    [setSearchQuery]
-  );
+  const handleChangeKeyword = useCallback((value) => {
+    setKeywordParam(value);
+  }, []);
 
   const { data, refetch, remove, isError, isLoading, isFetchingNextPage } = useInfiniteQuery(
     ["results"],
-    ({ pageParam = 1 }) => getResults({ page: pageParam, pageSize: searchQuery.perPage, keyword: searchQuery.keyword }),
+    ({ pageParam = 1 }) => getResults({ page: pageParam, pageSize: perPageParam, keyword: keywordParam }),
     {
       enabled: false,
       getNextPageParam: (lastPage) => {
@@ -69,7 +64,7 @@ const HomeProvider = ({ children }) => {
       refetch();
     },
     800,
-    [searchQuery]
+    [keywordParam]
   );
 
   const contextData = useMemo(() => {
@@ -77,14 +72,26 @@ const HomeProvider = ({ children }) => {
       isReady: isReady(),
       resultList,
       pages,
-      searchQuery,
+      keywordParam,
+      perPageParam,
       isError,
       isLoading,
       isFetchingNextPage,
       handleChangePerPage,
       handleChangeKeyword,
     };
-  }, [isReady, resultList, pages, searchQuery, isError, isLoading, isFetchingNextPage, handleChangePerPage, handleChangeKeyword]);
+  }, [
+    isReady,
+    resultList,
+    pages,
+    keywordParam,
+    perPageParam,
+    isError,
+    isLoading,
+    isFetchingNextPage,
+    handleChangePerPage,
+    handleChangeKeyword,
+  ]);
 
   return <context.Provider value={contextData}>{children}</context.Provider>;
 };
